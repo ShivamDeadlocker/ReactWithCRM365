@@ -1,0 +1,11 @@
+.highlighted {
+  background-color: yellow;
+  color: rgb(192, 17, 17);
+}
+
+.normal {
+  background-color: white;
+  color: blue;
+}
+
+/* Additional styles here */

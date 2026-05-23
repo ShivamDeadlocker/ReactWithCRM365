@@ -1,0 +1,17 @@
+/* styles.module.css */
+.container {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* .text {
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+} */
+#text {
+  font-size: 18px;
+  color: red;
+  font-weight: bold;
+}

@@ -1,0 +1,190 @@
+"use strict";
+/// <reference types="xrm" />
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var IKL;
+(function (IKL) {
+    let ShivamTestApp;
+    (function (ShivamTestApp) {
+        let Account;
+        (function (Account) {
+            class AccountWebApi {
+                /**
+                 * Handles WebAPI operation selection
+                 * @param executionContext
+                 */
+                static handleWebApiOperationChange(executionContext) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        var _a;
+                        try {
+                            const formContext = executionContext.getFormContext();
+                            const operation = (_a = formContext
+                                .getAttribute("shi_WebAPIOperation")) === null || _a === void 0 ? void 0 : _a.getValue();
+                            // switch (operation) {
+                            //   case 100010000:
+                            //     await this.createRelatedContact(formContext);
+                            //     break;
+                            //   case 100010001:
+                            //     await this.retrieveAssociatedContacts(formContext);
+                            //     break;
+                            //   case 100010002:
+                            //     await this.markAccountAsVIP(formContext);
+                            //     break;
+                            //   case 100010003:
+                            //     await this.deletePrimaryContact(formContext);
+                            //     break;
+                            //   default:
+                            //     console.log("No operation selected");
+                            // }
+                            if (operation === 100010000) {
+                                yield this.createRelatedContact(formContext);
+                            }
+                        }
+                        catch (error) {
+                            console.error("Error in handleWebApiOperationChange:", error);
+                        }
+                    });
+                }
+                /**
+                 * Create Related Contact
+                 * Creates a Contact and sets it
+                 * as Primary Contact of Account
+                 *
+                 * @param executionContext
+                 */
+                // public static async createRelatedContact(
+                //   formContext: Xrm.FormContext,
+                // ): Promise<void> {
+                //   try {
+                //     const accountName = formContext.getAttribute("name")?.getValue();
+                //     const accountId = formContext.data.entity
+                //       .getId()
+                //       .replace("{", "")
+                //       .replace("}", "");
+                //     const data: any = {
+                //       firstname: `${accountName} Contact`,
+                //       "parentcustomerid_account@odata.bind": `/accounts(${accountId})`,
+                //     };
+                //     const result = await Xrm.WebApi.createRecord("contact", data);
+                //     console.log("Contact Created:", result.id);
+                //     // Update Primary Contact
+                //     const updateData: any = {
+                //       "primarycontactid@odata.bind": `/contacts(${result.id})`,
+                //     };
+                //     await Xrm.WebApi.updateRecord("account", accountId, updateData);
+                //     Xrm.Navigation.openAlertDialog({
+                //       text: "Contact created successfully.",
+                //     });
+                //   } catch (error) {
+                //     console.error("Error creating Contact:", error);
+                //   }
+                // }
+                static createRelatedContact(formContext) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        var _a;
+                        try {
+                            // Get current form context
+                            // const formContext = executionContext.getFormContext();
+                            // Get Account Name
+                            const accountName = (_a = formContext.getAttribute("name")) === null || _a === void 0 ? void 0 : _a.getValue();
+                            // Check Account Name
+                            if (!accountName) {
+                                Xrm.Navigation.openAlertDialog({
+                                    text: "Account Name is empty.",
+                                });
+                                return;
+                            }
+                            // Get current Account Id
+                            let accountId = formContext.data.entity.getId();
+                            // Remove curly braces from GUID
+                            accountId = accountId.replace("{", "").replace("}", "");
+                            // Prepare Contact data
+                            const contactData = {
+                                // Contact First Name
+                                firstname: `${accountName} Contact`,
+                                // Link Contact to Account
+                                "parentcustomerid_account@odata.bind": `/accounts(${accountId})`,
+                            };
+                            // Create Contact record
+                            const result = yield Xrm.WebApi.createRecord("contact", contactData);
+                            console.log("Contact Created Successfully:", result.id);
+                            // Prepare Account update data
+                            const accountUpdateData = {
+                                // Set Primary Contact
+                                "primarycontactid@odata.bind": `/contacts(${result.id})`,
+                            };
+                            // Update Account
+                            yield Xrm.WebApi.updateRecord("account", accountId, accountUpdateData);
+                            console.log("Primary Contact Updated Successfully");
+                            // Success message
+                            Xrm.Navigation.openAlertDialog({
+                                text: "Contact created and set as Primary Contact successfully.",
+                            });
+                        }
+                        catch (error) {
+                            console.error("Error in createRelatedContact:", error);
+                            Xrm.Navigation.openAlertDialog({
+                                text: "Error while creating Contact.",
+                            });
+                        }
+                    });
+                }
+                /**
+                 * Retrieve Contacts
+                 */
+                static retrieveAssociatedContacts(formContext) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        try {
+                            const accountId = formContext.data.entity
+                                .getId()
+                                .replace("{", "")
+                                .replace("}", "");
+                            const query = `?$select=fullname,parentcustomerid&` +
+                                `$filter=_parentcustomerid_value eq ${accountId}`;
+                            const result = yield Xrm.WebApi.retrieveMultipleRecords("contact", query);
+                            result.entities.forEach((contact) => {
+                                console.log("Contact:", contact.fullname);
+                            });
+                            formContext.ui.setFormNotification(`This account has ${result.entities.length} associated contact(s).`, "INFO", "contact_notification");
+                        }
+                        catch (error) {
+                            console.error("Error retrieving Contacts:", error);
+                        }
+                    });
+                }
+                /**
+                 * Mark Account as VIP
+                 */
+                static markAccountAsVIP(formContext) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        try {
+                            const accountId = formContext.data.entity
+                                .getId()
+                                .replace("{", "")
+                                .replace("}", "");
+                            const data = {
+                                accountratingcode: 1,
+                                preferredcontactmethodcode: 2,
+                            };
+                            yield Xrm.WebApi.updateRecord("account", accountId, data);
+                            Xrm.Navigation.openAlertDialog({
+                                text: "Account updated successfully as VIP.",
+                            });
+                        }
+                        catch (error) {
+                            console.error("Error updating Account:", error);
+                        }
+                    });
+                }
+            }
+            Account.AccountWebApi = AccountWebApi;
+        })(Account = ShivamTestApp.Account || (ShivamTestApp.Account = {}));
+    })(ShivamTestApp = IKL.ShivamTestApp || (IKL.ShivamTestApp = {}));
+})(IKL || (IKL = {}));

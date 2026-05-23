@@ -1,0 +1,123 @@
+<ImportExportXml version="9.2.26052.134" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26052.134" OrganizationSchemaType="Full" CRMServerServiceabilityVersion="9.2.26052.00134">
+  <SolutionManifest>
+    <UniqueName>ShivamReactWithCRMExam</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="Shivam React With CRM Exam" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions />
+    <Version>1.0.0.1</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>Shivam</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Shivam" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions />
+      <EMailAddress xsi:nil="true"></EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>shi</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>10001</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="account" behavior="0" />
+      <RootComponent type="1" schemaName="contact" behavior="0" />
+      <RootComponent type="1" schemaName="opportunity" behavior="0" />
+      <RootComponent type="1" schemaName="sab_projects" behavior="0" />
+      <RootComponent type="1" schemaName="sab_tasks" behavior="0" />
+      <RootComponent type="1" schemaName="sab_user" behavior="0" />
+      <RootComponent type="1" schemaName="shiedu_courseassessment" behavior="0" />
+      <RootComponent type="1" schemaName="shiedu_courseenrollment" behavior="0" />
+      <RootComponent type="1" schemaName="shiedu_project" behavior="0" />
+      <RootComponent type="1" schemaName="shi_employeeinformation" behavior="0" />
+      <RootComponent type="1" schemaName="shi_laptopsupport" behavior="0" />
+      <RootComponent type="9" schemaName="crfaf_department" behavior="0" />
+      <RootComponent type="9" schemaName="sab_priority" behavior="0" />
+      <RootComponent type="9" schemaName="sab_role" behavior="0" />
+      <RootComponent type="9" schemaName="sab_status" behavior="0" />
+      <RootComponent type="9" schemaName="shiedu_assignmenttypevalues" behavior="0" />
+      <RootComponent type="9" schemaName="shiedu_courseadvisorvalues" behavior="0" />
+      <RootComponent type="9" schemaName="shiedu_courselocationvalues" behavior="0" />
+      <RootComponent type="9" schemaName="shiedu_enrollmenttypevalues" behavior="0" />
+      <RootComponent type="9" schemaName="shiedu_projectstatus" behavior="0" />
+      <RootComponent type="9" schemaName="shiedu_projecttype" behavior="0" />
+      <RootComponent type="9" schemaName="shi_accountrating" behavior="0" />
+      <RootComponent type="9" schemaName="shi_customertype" behavior="0" />
+      <RootComponent type="9" schemaName="shi_hardware" behavior="0" />
+      <RootComponent type="9" schemaName="shi_warrantystatus" behavior="0" />
+      <RootComponent type="9" schemaName="shi_webapioperation" behavior="0" />
+      <RootComponent type="60" id="{15915835-b87c-49ec-9ffc-bfac3ac44ef1}" />
+      <RootComponent type="60" id="{70ad8b15-e3f3-4d7d-9e4b-16cb4e51b484}" />
+      <RootComponent type="60" id="{a5a7320c-7f44-f111-bec6-6045bdce24d5}" />
+      <RootComponent type="60" id="{dfe777d7-8f44-f111-bec6-6045bdce24d5}" />
+      <RootComponent type="60" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      <RootComponent type="61" schemaName="crfaf_AccountWebApi" behavior="0" />
+      <RootComponent type="61" schemaName="shiedu_ProjectFormLibrary" behavior="0" />
+      <RootComponent type="61" schemaName="shi_/Opportunity/index.html" behavior="0" />
+      <RootComponent type="61" schemaName="shi_/ReactTraning/ToDo/index.html" behavior="0" />
+      <RootComponent type="61" schemaName="shi_AccountWebAp" behavior="0" />
+      <RootComponent type="61" schemaName="shi_FormEvents" behavior="0" />
+      <RootComponent type="62" schemaName="shi_ShivamReactWithCRMApp" behavior="0" />
+      <RootComponent type="80" schemaName="shi_ShivamReactWithCRMApp" behavior="0" />
+    </RootComponents>
+    <MissingDependencies>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

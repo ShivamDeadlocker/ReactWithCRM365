@@ -1,0 +1,651 @@
+"use strict";
+/// <reference types="xrm" />
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var IKL;
+(function (IKL) {
+    let ProjectManagement;
+    (function (ProjectManagement) {
+        let Project;
+        (function (Project) {
+            class ProjectFormLibrary {
+                /**
+                 * Handles Project Status Change
+                 *
+                 * Business Logic:
+                 * ----------------
+                 * 1. If Status = New
+                 *      → Completion % = 0
+                 *      → Lock field
+                 *
+                 * 2. If Status = In Progress
+                 *      → Allow manual editing
+                 *
+                 * 3. If Status = Completed
+                 *      → Completion % = 100
+                 *      → Lock field
+                 *
+                 * @param executionContext
+                 */
+                static handleProjectStatusChange(executionContext) {
+                    var _a;
+                    try {
+                        // -------------------------------------------------
+                        // STEP 1:
+                        // Get current form context
+                        // -------------------------------------------------
+                        const formContext = executionContext.getFormContext();
+                        // -------------------------------------------------
+                        // STEP 2:
+                        // Get Project Status field value
+                        //
+                        // getAttribute() -> accesses field data
+                        // getValue() -> reads current value
+                        //
+                        // IMPORTANT:
+                        // OptionSet/Choice fields return NUMBER
+                        // -------------------------------------------------
+                        const projectStatus = (_a = formContext
+                            .getAttribute("shiedu_projectstatus")) === null || _a === void 0 ? void 0 : _a.getValue();
+                        // -------------------------------------------------
+                        // STEP 3:
+                        // Access Completion Percentage ATTRIBUTE
+                        //
+                        // ATTRIBUTE handles:
+                        // - getValue()
+                        // - setValue()
+                        // -------------------------------------------------
+                        const completionAttribute = formContext.getAttribute("shiedu_completionpercentage");
+                        // -------------------------------------------------
+                        // STEP 4:
+                        // Access Completion Percentage CONTROL
+                        //
+                        // CONTROL handles:
+                        // - setDisabled()
+                        // - setVisible()
+                        // -------------------------------------------------
+                        const completionControl = formContext.getControl("shiedu_completionpercentage");
+                        // -------------------------------------------------
+                        // STEP 5:
+                        // Apply logic based on Project Status
+                        // -------------------------------------------------
+                        switch (projectStatus) {
+                            // =============================================
+                            // STATUS = NEW
+                            // =============================================
+                            case 710060000:
+                                // Set Completion Percentage = 0
+                                completionAttribute === null || completionAttribute === void 0 ? void 0 : completionAttribute.setValue(0);
+                                //@ts-ignore
+                                // Lock Completion field
+                                completionControl === null || completionControl === void 0 ? void 0 : completionControl.setDisabled(true);
+                                console.log("Project Status = New");
+                                console.log("Completion Percentage set to 0 and locked.");
+                                break;
+                            // =============================================
+                            // STATUS = IN PROGRESS
+                            // =============================================
+                            case 710060002:
+                                //@ts-ignore
+                                // Unlock Completion field
+                                completionControl === null || completionControl === void 0 ? void 0 : completionControl.setDisabled(false);
+                                console.log("Project Status = In Progress");
+                                console.log("Completion Percentage field unlocked.");
+                                if ((completionAttribute === null || completionAttribute === void 0 ? void 0 : completionAttribute.getValue()) !== null &&
+                                    (Number(completionAttribute === null || completionAttribute === void 0 ? void 0 : completionAttribute.getValue()) < 1 ||
+                                        Number(completionAttribute === null || completionAttribute === void 0 ? void 0 : completionAttribute.getValue()) > 99)) {
+                                    // =====================================
+                                    // Show alert message
+                                    // =====================================
+                                    Xrm.Navigation.openAlertDialog({
+                                        text: "Completion Percentage must be between 1 and 99 for In Progress projects.",
+                                    });
+                                    console.log("Invalid Completion Percentage.");
+                                }
+                                else {
+                                    console.log("Valid Completion Percentage.");
+                                }
+                                break;
+                            // =============================================
+                            // STATUS = COMPLETED
+                            // =============================================
+                            case 710060004:
+                                // Set Completion Percentage = 100
+                                completionAttribute === null || completionAttribute === void 0 ? void 0 : completionAttribute.setValue(100);
+                                //@ts-ignore
+                                // Lock Completion field
+                                completionControl === null || completionControl === void 0 ? void 0 : completionControl.setDisabled(true);
+                                console.log("Project Status = Completed");
+                                console.log("Completion Percentage set to 100 and locked.");
+                                break;
+                            // =============================================
+                            // DEFAULT CASE
+                            // =============================================
+                            default:
+                                console.log("No matching Project Status found.");
+                                break;
+                        }
+                    }
+                    catch (error) {
+                        // -------------------------------------------------
+                        // ERROR HANDLING
+                        // -------------------------------------------------
+                        console.error("Error in handleProjectStatusChange:", error);
+                    }
+                }
+                /**
+                 * =====================================================
+                 * FUNCTION:
+                 * validateProjectDeadline
+                 * =====================================================
+                 *
+                 * BUSINESS REQUIREMENT:
+                 * -----------------------------------------------------
+                 * 1. If:
+                 *      Project Type = Client
+                 *      AND
+                 *      Project Status = In Progress
+                 *
+                 * Then:
+                 *      Project Deadline must be within 30 days
+                 *
+                 * If deadline is greater than 30 days:
+                 *      Show alert message
+                 *
+                 * 2. If:
+                 *      Project Type = Internal
+                 *
+                 * Then:
+                 *      Allow any future date
+                 *
+                 * EVENT REGISTRATION:
+                 * -----------------------------------------------------
+                 * Register this function on:
+                 *
+                 * 1. Project Type → OnChange
+                 * 2. Project Status → OnChange
+                 * 3. Project Deadline → OnChange
+                 *
+                 * @param executionContext
+                 * =====================================================
+                 */
+                static validateProjectDeadline(executionContext) {
+                    var _a, _b, _c;
+                    try {
+                        // =============================================
+                        // STEP 1:
+                        // Get current form context
+                        // =============================================
+                        const formContext = executionContext.getFormContext();
+                        // =============================================
+                        // STEP 2:
+                        // Get Project Type value
+                        //
+                        // Project Type Option Set Values:
+                        // Internal = 710060000
+                        // Client = 710060001
+                        // Research = 710060002
+                        // =============================================
+                        const projectType = (_a = formContext
+                            .getAttribute("shiedu_projecttype")) === null || _a === void 0 ? void 0 : _a.getValue();
+                        // =============================================
+                        // STEP 3:
+                        // Get Project Status value
+                        //
+                        // Project Status Values:
+                        // New = 710060000
+                        // Planned = 710060001
+                        // In Progress = 710060002
+                        // On Hold = 710060003
+                        // Completed = 710060004
+                        // =============================================
+                        const projectStatus = (_b = formContext
+                            .getAttribute("shiedu_projectstatus")) === null || _b === void 0 ? void 0 : _b.getValue();
+                        // =============================================
+                        // STEP 4:
+                        // Get Project Deadline value
+                        //
+                        // IMPORTANT:
+                        // Date fields return JavaScript Date object
+                        // =============================================
+                        const projectDeadline = (_c = formContext
+                            .getAttribute("shiedu_projectdeadline")) === null || _c === void 0 ? void 0 : _c.getValue();
+                        // =============================================
+                        // STEP 5:
+                        // Check if Project Type = Client
+                        // AND
+                        // Project Status = In Progress
+                        // =============================================
+                        if (projectType === 710060001 && projectStatus === 710060002) {
+                            // =========================================
+                            // Check if Deadline field has value
+                            // =========================================
+                            if (!projectDeadline) {
+                                console.log("Project Deadline is empty.");
+                                return;
+                            }
+                            // =========================================
+                            // Get today's date
+                            // =========================================
+                            const currentDate = new Date();
+                            // =========================================
+                            // Create maximum allowed date
+                            //
+                            // Today + 30 days
+                            // =========================================
+                            const maxAllowedDate = new Date();
+                            maxAllowedDate.setDate(currentDate.getDate() + 30);
+                            // =========================================
+                            // Compare Project Deadline
+                            // =========================================
+                            if (projectDeadline > maxAllowedDate) {
+                                // =====================================
+                                // Show Alert Dialog
+                                // =====================================
+                                Xrm.Navigation.openAlertDialog({
+                                    text: "Client Project Must Have A Deadline within 30 days",
+                                });
+                                console.log("Deadline validation failed.");
+                            }
+                            else {
+                                console.log("Deadline validation passed.");
+                            }
+                        }
+                        // =============================================
+                        // STEP 6:
+                        // If Project Type = Internal
+                        // No validation required
+                        // =============================================
+                        else if (projectType === 710060000) {
+                            console.log("Internal Project - Any future date allowed.");
+                        }
+                    }
+                    catch (error) {
+                        // =============================================
+                        // ERROR HANDLING
+                        // =============================================
+                        console.error("Error in validateProjectDeadline:", error);
+                    }
+                }
+                /**
+                 * =====================================================
+                 * FUNCTION:
+                 * assignAllocatedTeam
+                 * =====================================================
+                 *
+                 * BUSINESS REQUIREMENT:
+                 * -----------------------------------------------------
+                 * 1. If:
+                 *      Project Type = Client
+                 *      AND
+                 *      Project Priority = High
+                 *
+                 * Then:
+                 *      Assign "Client Support Team"
+                 *
+                 * -----------------------------------------------------
+                 * 2. If:
+                 *      Project Type = Research
+                 *
+                 * Then:
+                 *      Assign "Research and Development Team"
+                 *
+                 * -----------------------------------------------------
+                 * 3. If:
+                 *      Project Type = Internal
+                 *
+                 * Then:
+                 *      Assign "Internal Team"
+                 *
+                 * EVENT REGISTRATION:
+                 * -----------------------------------------------------
+                 * Register this function on:
+                 *
+                 * 1. Project Type → OnChange
+                 * 2. Project Priority → OnChange
+                 *
+                 * @param executionContext
+                 * =====================================================
+                 */
+                static assignAllocatedTeam(executionContext) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        var _a, _b;
+                        try {
+                            // =================================================
+                            // STEP 1:
+                            // Get current form context
+                            // =================================================
+                            const formContext = executionContext.getFormContext();
+                            // =================================================
+                            // STEP 2:
+                            // Get Project Type value
+                            //
+                            // Internal = 710060000
+                            // Client = 710060001
+                            // Research = 710060002
+                            // =================================================
+                            const projectType = (_a = formContext
+                                .getAttribute("shiedu_projecttype")) === null || _a === void 0 ? void 0 : _a.getValue();
+                            // =================================================
+                            // STEP 3:
+                            // Get Project Priority value
+                            //
+                            // Low = 710060000
+                            // Medium = 710060001
+                            // High = 710060002
+                            // =================================================
+                            // const projectPriority = formContext
+                            //   .getAttribute("shiedu_projectpriority")
+                            //   ?.getValue();
+                            // =================================================
+                            // STEP 4:
+                            // Variable to store Team Name
+                            // =================================================
+                            let teamName = "";
+                            // =================================================
+                            // STEP 5:
+                            // Apply business logic
+                            // =================================================
+                            // ================================================
+                            // CONDITION 1:
+                            // Client + High Priority
+                            // ================================================
+                            if (projectType === 710060001) {
+                                teamName = "Client Support Team";
+                                console.log("Client High Priority Project");
+                            }
+                            // ================================================
+                            // CONDITION 2:
+                            // Research Project
+                            // ================================================
+                            else if (projectType === 710060002) {
+                                teamName = "Research and Development Team";
+                                console.log("Research Project");
+                            }
+                            // ================================================
+                            // CONDITION 3:
+                            // Internal Project
+                            // ================================================
+                            else if (projectType === 710060000) {
+                                teamName = "Internal Team";
+                                console.log("Internal Project");
+                            }
+                            // =================================================
+                            // STEP 6:
+                            // If no matching Team Name found
+                            // =================================================
+                            if (!teamName) {
+                                console.log("No matching Team logic found.");
+                                return;
+                            }
+                            // =================================================
+                            // STEP 7:
+                            // Retrieve Team record from Team table
+                            //
+                            // team = Team table logical name
+                            // =================================================
+                            const result = yield Xrm.WebApi.retrieveMultipleRecords("team", `?$select=name,teamid&$filter=name eq '${teamName}'`);
+                            // =================================================
+                            // STEP 8:
+                            // Check if Team record exists
+                            // =================================================
+                            if (result.entities.length > 0) {
+                                // =============================================
+                                // Get first Team record
+                                // =============================================
+                                const team = result.entities[0];
+                                console.log("Team Found:", team.name);
+                                // =============================================
+                                // STEP 9:
+                                // Set Allocated Team lookup field
+                                //
+                                // Lookup fields require:
+                                // id
+                                // name
+                                // entityType
+                                // =============================================
+                                (_b = formContext.getAttribute("shiedu_allocatedteam")) === null || _b === void 0 ? void 0 : _b.setValue([
+                                    {
+                                        // Team GUID
+                                        id: team.teamid,
+                                        // Team Name
+                                        name: team.name,
+                                        // Table Logical Name
+                                        entityType: "team",
+                                    },
+                                ]);
+                                console.log("Allocated Team assigned successfully.");
+                            }
+                            else {
+                                // =============================================
+                                // STEP 10:
+                                // Team not found
+                                // Show notification
+                                // =============================================
+                                formContext.ui.setFormNotification("Insufficient resources. Please contact the Resource Management team.", "WARNING", "team_notification");
+                                console.log("No Team Found.");
+                            }
+                        }
+                        catch (error) {
+                            // =================================================
+                            // ERROR HANDLING
+                            // =================================================
+                            console.error("Error in assignAllocatedTeam:", error);
+                        }
+                    });
+                }
+                /**
+                 * =====================================================
+                 * FUNCTION:
+                 * assignTeamLeader
+                 * =====================================================
+                 *
+                 * BUSINESS REQUIREMENT:
+                 * -----------------------------------------------------
+                 * If:
+                 * Project Type = Client
+                 * AND
+                 * Project Status = Planned
+                 *
+                 * Then:
+                 * Team Leader = Client Account's Account Manager
+                 *
+                 * EVENT REGISTRATION:
+                 * -----------------------------------------------------
+                 * Register this function on:
+                 *
+                 * 1. Project Type → OnChange
+                 * 2. Project Status → OnChange
+                 * 3. Client Name → OnChange
+                 *
+                 * @param executionContext
+                 * =====================================================
+                 */
+                static assignTeamLeader(executionContext) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        var _a, _b, _c, _d;
+                        try {
+                            // =================================================
+                            // STEP 1:
+                            // Get current form context
+                            // =================================================
+                            const formContext = executionContext.getFormContext();
+                            // =================================================
+                            // STEP 2:
+                            // Get Project Type
+                            //
+                            // Client = 710060001
+                            // =================================================
+                            const projectType = (_a = formContext
+                                .getAttribute("shiedu_projecttype")) === null || _a === void 0 ? void 0 : _a.getValue();
+                            // =================================================
+                            // STEP 3:
+                            // Get Project Status
+                            //
+                            // Planned = 710060001
+                            // =================================================
+                            const projectStatus = (_b = formContext
+                                .getAttribute("shiedu_projectstatus")) === null || _b === void 0 ? void 0 : _b.getValue();
+                            // =================================================
+                            // STEP 4:
+                            // Validate condition
+                            //
+                            // Client + Planned
+                            // =================================================
+                            if (projectType === 710060001 && projectStatus === 710060001) {
+                                console.log("Client + Planned condition matched.");
+                                // =============================================
+                                // STEP 5:
+                                // Get Client Account Lookup
+                                // =============================================
+                                const clientLookup = (_c = formContext
+                                    .getAttribute("shiedu_clientname")) === null || _c === void 0 ? void 0 : _c.getValue();
+                                // =============================================
+                                // Check if Client Account selected
+                                // =============================================
+                                if (!clientLookup) {
+                                    console.log("Client Account not selected.");
+                                    return;
+                                }
+                                // =============================================
+                                // STEP 6:
+                                // Get Account GUID
+                                // =============================================
+                                //@ts-ignore
+                                const accountId = clientLookup[0].id
+                                    .replace("{", "")
+                                    .replace("}", "");
+                                console.log("Account Id:", accountId);
+                                // =============================================
+                                // STEP 7:
+                                // Retrieve Account Record
+                                //
+                                // shiedu_accountmanager
+                                // = Account Manager lookup field
+                                // =============================================
+                                const accountRecord = yield Xrm.WebApi.retrieveRecord("account", accountId, `?$select=_shiedu_projectaccountmanager_value`);
+                                console.log("Account Record Retrieved.");
+                                // =============================================
+                                // STEP 8:
+                                // Get Account Manager GUID
+                                // =============================================
+                                const accountManagerId = accountRecord["_shiedu_projectaccountmanager_value"];
+                                // =============================================
+                                // Check if Account Manager exists
+                                // =============================================
+                                if (!accountManagerId) {
+                                    console.log("Account Manager not found.");
+                                    return;
+                                }
+                                // =============================================
+                                // STEP 9:
+                                // Get Account Manager Name
+                                //
+                                // Dataverse automatically stores:
+                                //
+                                // @OData.Community.Display.V1.FormattedValue
+                                // =============================================
+                                const accountManagerName = accountRecord["_shiedu_projectaccountmanager_value@OData.Community.Display.V1.FormattedValue"];
+                                console.log("Account Manager:", accountManagerName);
+                                // =============================================
+                                // STEP 10:
+                                // Set Team Leader Lookup
+                                //
+                                // Team Leader is Lookup → User
+                                // =============================================
+                                (_d = formContext.getAttribute("shiedu_tleader")) === null || _d === void 0 ? void 0 : _d.setValue([
+                                    {
+                                        // User GUID
+                                        id: accountManagerId,
+                                        // User Name
+                                        name: accountManagerName,
+                                        // Table Logical Name
+                                        entityType: "systemuser",
+                                    },
+                                ]);
+                                console.log("Team Leader assigned successfully.");
+                            }
+                        }
+                        catch (error) {
+                            // =================================================
+                            // ERROR HANDLING
+                            // =================================================
+                            console.error("Error in assignTeamLeader:", error);
+                        }
+                    });
+                }
+                /**
+                 * =====================================================
+                 * FUNCTION:
+                 * validateTeamLeaderOnSave
+                 * =====================================================
+                 *
+                 * BUSINESS REQUIREMENT:
+                 * -----------------------------------------------------
+                 * If Team Leader is empty:
+                 *
+                 * 1. Show error message
+                 * 2. Prevent form save
+                 *
+                 * EVENT REGISTRATION:
+                 * -----------------------------------------------------
+                 * Register on:
+                 * Form → OnSave
+                 *
+                 * @param executionContext
+                 * =====================================================
+                 */
+                static validateTeamLeaderOnSave(executionContext) {
+                    var _a;
+                    try {
+                        // =================================================
+                        // STEP 1:
+                        // Get current form context
+                        // =================================================
+                        const formContext = executionContext.getFormContext();
+                        // =================================================
+                        // STEP 2:
+                        // Get Team Leader Lookup
+                        // =================================================
+                        const teamLeader = (_a = formContext
+                            .getAttribute("shiedu_tleader")) === null || _a === void 0 ? void 0 : _a.getValue();
+                        // =================================================
+                        // STEP 3:
+                        // Validate Team Leader
+                        // =================================================
+                        if (!teamLeader) {
+                            console.log("Team Leader is empty.");
+                            // =============================================
+                            // Show Alert Dialog
+                            // =============================================
+                            Xrm.Navigation.openAlertDialog({
+                                text: "A Team Leader must be assigned before starting the project!!!",
+                            });
+                            //@ts-ignore
+                            // =============================================
+                            // STEP 4:
+                            // Prevent record save
+                            // =============================================
+                            executionContext.getEventArgs().preventDefault();
+                            console.log("Form Save Prevented.");
+                        }
+                    }
+                    catch (error) {
+                        // =================================================
+                        // ERROR HANDLING
+                        // =================================================
+                        console.error("Error in validateTeamLeaderOnSave:", error);
+                    }
+                }
+            }
+            Project.ProjectFormLibrary = ProjectFormLibrary;
+        })(Project = ProjectManagement.Project || (ProjectManagement.Project = {}));
+    })(ProjectManagement = IKL.ProjectManagement || (IKL.ProjectManagement = {}));
+})(IKL || (IKL = {}));

@@ -1,0 +1,119 @@
+/* Center whole application */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* Main container */
+
+.todo-container {
+  width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Heading */
+
+.todo-title {
+  text-align: center;
+
+  color: #333;
+}
+
+/* Input and button wrapper */
+
+.input-container {
+  display: flex;
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+/* Input field */
+
+.task-input {
+  flex: 1;
+
+  padding: 10px;
+
+  border: 1px solid gray;
+
+  border-radius: 5px;
+}
+
+/* Add button */
+
+.add-btn {
+  background-color: blue;
+
+  color: white;
+
+  border: none;
+
+  padding: 10px;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+}
+
+/* Hover effect */
+
+.add-btn:hover {
+  background-color: darkblue;
+}
+
+/* Task list */
+
+.task-list {
+  list-style: none;
+
+  padding: 0;
+}
+
+/* Individual task */
+
+.task-item {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 10px;
+
+  margin-bottom: 10px;
+
+  background-color: #eee;
+
+  border-radius: 5px;
+}
+
+/* Delete button */
+
+.delete-btn {
+  background-color: red;
+
+  color: white;
+
+  border: none;
+
+  padding: 5px 10px;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+}
+
+/* Hover effect */
+
+.delete-btn:hover {
+  background-color: darkred;
+}

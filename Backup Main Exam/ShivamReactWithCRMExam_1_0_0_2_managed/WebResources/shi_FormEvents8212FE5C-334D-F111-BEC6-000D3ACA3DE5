@@ -1,0 +1,28 @@
+"use strict";
+/// <reference types="@types/xrm" />
+var IKL;
+(function (IKL) {
+    let ShivamTestApp;
+    (function (ShivamTestApp) {
+        let Account;
+        (function (Account) {
+            class AccountFormLibrary {
+                static onLoadOfAccount(params) {
+                    let formContext = params.getFormContext();
+                    //@ts-ignore
+                    // Disable Warranty Status
+                    formContext.getControl("shi_warrantystatus").setDisabled(true);
+                }
+                static onSaveOfAccount(params) {
+                    let formContext = params.getFormContext();
+                    //@ts-ignore                    
+                    // Enable Warranty Status
+                    formContext.getControl("shi_warrantystatus").setDisabled(false);
+                }
+            }
+            Account.AccountFormLibrary = AccountFormLibrary;
+        })(Account = ShivamTestApp.Account || (ShivamTestApp.Account = {}));
+    })(ShivamTestApp = IKL.ShivamTestApp || (IKL.ShivamTestApp = {}));
+})(IKL || (IKL = {}));
+// Creating an object and calling the function
+// let crmForm = new IKL.ShivamTestApp.Account.AccountFormLibrary();
